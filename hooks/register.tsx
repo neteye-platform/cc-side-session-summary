@@ -29,13 +29,13 @@ async function refreshGit($: EngineInterface) {
   try {
     const b = await $.process.run(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], { timeoutMs: 5000 })
     if (b.exitCode !== 0) return await update($, git, () => ({ branch: '', files: [], worktree: '', isLinked: false }))
-    const st = await $.process.run(['git', 'status', '--porcelain'], { timeoutMs: 5000 })
+    const st = await $.process.run(['git', 'status', '--porcelain', '--untracked-files=all'], { timeoutMs: 5000 })
     const w = await $.process.run(
       ['git', 'rev-parse', '--path-format=absolute', '--show-toplevel', '--git-dir', '--git-common-dir'],
       { timeoutMs: 5000 },
     )
     const [top = '', gitDir = '', common = ''] = w.stdout.split('\n')
-    const files = st.stdout.split('\n').filter(Boolean).slice(0, 200)
+    const files = st.stdout.split('\n').filter(Boolean)
     await update($, git, () => ({
       branch: b.stdout.trim(),
       files,
@@ -144,7 +144,10 @@ export const register: Register = on => {
 
   on('prompt.submit', async ($, e, next) => {
     if (!e.command && e.text) {
-      await update($, activity, a => ({ ...a, prompt: e.text.slice(0, 160), isBusy: true }))
+      // Drop the previous turn's leftovers so the pane does not show a stale
+      // "Idle - waiting for you" or tool name under "Current (working)".
+      await update($, status, s => ({ ...s, current: '' }))
+      await update($, activity, a => ({ ...a, prompt: e.text.slice(0, 160), lastTool: '', isBusy: true }))
     }
 
     return next({ ...e, context: [...(e.context ?? []), INSTRUCTION] })

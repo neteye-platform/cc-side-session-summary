@@ -75,7 +75,12 @@ Claude Code caches an installed plugin by version, so updates arrive when the
 
 ```bash
 claude plugin marketplace update neteye-platform
+claude plugin update cc-side-summary@neteye-platform
 ```
+
+Refreshing the marketplace only updates its listing, so the second command is
+what installs the new version. Then start a new session or run
+`/reload-plugins`.
 
 ## Uninstall
 
@@ -104,9 +109,10 @@ The mod hot-reloads when you save a file in that directory.
 - Outside a git repository the Worktree section says `Not a git repository`.
 - The token and cost figures come from the last model response, so they move
   between turns, not while a long run of tool calls is going on.
-- Hooks stay active in the VS Code extension, `claude -p` and cloud sessions,
-  but the interface part only draws in the terminal and the Desktop app's Code
-  tab.
+- The interface part draws in the terminal, the Desktop app's Code tab and the
+  VS Code extension (version 2.1.299 or later, or 2.1.304 for sessions that do
+  not fetch feature flags, such as Amazon Bedrock). In `claude -p` and cloud
+  sessions the hooks stay active but nothing is drawn.
 - Mod events and render-site props can change between Claude Code releases.
   If the pane stops drawing, run `claude plugin validate .` and check the debug
   log.

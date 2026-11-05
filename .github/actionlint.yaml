@@ -1,0 +1,6 @@
+# actionlint does not know the `queue` key of `concurrency` yet, although GitHub
+# documents it. Remove this file once the pinned actionlint accepts it.
+paths:
+  .github/workflows/release.yaml:
+    ignore:
+      - 'unexpected key "queue" for "concurrency" section'
