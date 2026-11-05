@@ -47,17 +47,20 @@ the command there.
 
 ## Install
 
+The plugin is listed in the `neteye-platform` marketplace, which lives in
+[`neteye-platform/ai-agents-tools`](https://github.com/neteye-platform/ai-agents-tools).
+
 From a terminal:
 
 ```bash
-claude plugin marketplace add neteye-platform/cc-side-session-summary
+claude plugin marketplace add neteye-platform/ai-agents-tools
 claude plugin install cc-side-session-summary@neteye-platform
 ```
 
 Or from inside a Claude Code session:
 
 ```text
-/plugin marketplace add neteye-platform/cc-side-session-summary
+/plugin marketplace add neteye-platform/ai-agents-tools
 /plugin install cc-side-session-summary@neteye-platform
 ```
 
