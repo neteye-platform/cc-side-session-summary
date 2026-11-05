@@ -8,7 +8,7 @@ export type Activity = { prompt: string; lastTool: string; isBusy: boolean }
 
 declare module 'claude-code' {
   interface PluginState {
-    'cc-side-summary': {
+    'cc-side-session-summary': {
       status: Shaped<Status>
       activity: Shaped<Activity>
       git: Shaped<Git>

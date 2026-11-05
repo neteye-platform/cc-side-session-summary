@@ -1,9 +1,9 @@
 import { expect, test } from 'claude-code/testing'
 
 const PANE = {
-  plugin: 'cc-side-summary',
+  plugin: 'cc-side-session-summary',
   component: 'Pane',
-  requestId: 'cc-side-summary',
+  requestId: 'cc-side-session-summary',
   props: {
     title: 'Summary',
     isFocused: false,

@@ -3,16 +3,16 @@ import type { EngineInterface, Register } from 'claude-code'
 
 import type { Activity, Git, Model, Status, Step, Usage, View } from '../types'
 
-const PANE = 'cc-side-summary'
-const TOOL = 'mcp__cc-side-summary__set_status'
+const PANE = 'cc-side-session-summary'
+const TOOL = 'mcp__cc-side-session-summary__set_status'
 
 const status = atom(
-  { plugin: 'cc-side-summary', key: 'status' } as const,
+  { plugin: 'cc-side-session-summary', key: 'status' } as const,
   { goal: '', summary: '', current: '', detail: '', steps: [] } as Status,
   { shape: 'status-3' },
 )
 const activity = atom(
-  { plugin: 'cc-side-summary', key: 'activity' } as const,
+  { plugin: 'cc-side-session-summary', key: 'activity' } as const,
   { prompt: '', lastTool: '', isBusy: false } as Activity,
   { shape: 'activity-1' },
 )
@@ -20,7 +20,7 @@ const activity = atom(
 const INSTRUCTION = `A side pane shows the user a live session summary. Keep it current by calling ${TOOL} (a) after the user's request is clear, (b) whenever a step finishes or the plan changes, and (c) at the end of your turn. Pass: "goal" (one line: the purpose of this worktree/session, the overall objective; set it once the aim is clear and keep it stable unless the aim changes), "summary" (at most 2 short lines about the LAST thing completed and its outcome, not a running history; the steps list already carries the history), "current" (one short line: what you are doing right now, or "Idle - waiting for you" when finished), "detail" (2-4 short lines expanding on the current work: the approach, the file or problem in hand, what comes next; empty when idle), and "steps" (a short list of {text, status} with status done|doing|todo, at most 8 items). Call it alongside your other work; do not mention it to the user.`
 
 const git = atom(
-  { plugin: 'cc-side-summary', key: 'git' } as const,
+  { plugin: 'cc-side-session-summary', key: 'git' } as const,
   { branch: '', files: [], worktree: '', isLinked: false } as Git,
   { shape: 'git-2' },
 )
@@ -53,18 +53,18 @@ const fromBranch = (b: string) =>
     : b.replace(/^[a-z]+\//, '').replace(/[-_]+/g, ' ')
 
 const usage = atom(
-  { plugin: 'cc-side-summary', key: 'usage' } as const,
+  { plugin: 'cc-side-session-summary', key: 'usage' } as const,
   { tokens: 0, percent: -1, usd: 0 } as Usage,
   { shape: 'usage-1' },
 )
 const view = atom(
-  { plugin: 'cc-side-summary', key: 'view' } as const,
+  { plugin: 'cc-side-session-summary', key: 'view' } as const,
   { isProgressOpen: true } as View,
   { shape: 'view-1' },
 )
 
 const model = atom(
-  { plugin: 'cc-side-summary', key: 'model' } as const,
+  { plugin: 'cc-side-session-summary', key: 'model' } as const,
   { name: '', effort: '' } as Model,
   { shape: 'model-1' },
 )
