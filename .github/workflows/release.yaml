@@ -36,12 +36,10 @@ on:
 permissions:
   contents: read
 
-# One release at a time. Later runs queue behind the first (queue: max keeps
-# every pending run instead of replacing the older one) and never cancel a
-# release that is already tagging.
+# One release at a time. A second run queues behind the first and never
+# cancels a release that is already tagging.
 concurrency:
   group: release
-  queue: max
   cancel-in-progress: false
 
 jobs:
@@ -100,21 +98,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          tag="$(gh api "repos/${GITHUB_REPOSITORY}/git/tags" \
+          tag_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/tags" \
             -f tag="v${VERSION}" \
             -f message="v${VERSION}" \
             -f object="$GITHUB_SHA" \
-            -f type=commit)"
-          tag_sha="$(jq -er '.sha' <<<"$tag")"
-
-          # GitHub's docs do not promise that a tag created this way is signed,
-          # so report what it says instead of assuming. This warns and does not
-          # block the release.
-          if [[ "$(jq -r '.verification.verified' <<<"$tag")" != "true" ]]; then
-            reason="$(jq -r '.verification.reason' <<<"$tag")"
-            echo "::warning::Tag v${VERSION} is not verified by GitHub (reason: ${reason})"
-          fi
-
+            -f type=commit \
+            --jq .sha)"
           gh api "repos/${GITHUB_REPOSITORY}/git/refs" \
             -f ref="refs/tags/v${VERSION}" \
             -f sha="$tag_sha"
