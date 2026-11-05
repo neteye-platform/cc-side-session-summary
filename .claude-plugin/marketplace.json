@@ -1,0 +1,15 @@
+{
+  "name": "neteye-platform",
+  "description": "Claude Code plugins and mods by NetEye Platform developers",
+  "owner": {
+    "name": "NetEye Platform",
+    "url": "https://github.com/neteye-platform"
+  },
+  "plugins": [
+    {
+      "name": "cc-side-summary",
+      "source": "./",
+      "description": "A live side pane with the worktree, goal, progress checklist, what is happening now and the last thing done, plus token and cost stats"
+    }
+  ]
+}
