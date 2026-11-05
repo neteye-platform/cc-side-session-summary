@@ -1,0 +1,13 @@
+name: Common Pull Request Checks
+
+on:
+  pull_request:
+    branches:
+      - "**"
+
+permissions: write-all
+
+jobs:
+  common-pull-request-checks:
+    uses: neteye-platform/repo-commons/.github/workflows/common-pull-request-checks.yaml@5841469051ddbcbf36e4f86bd4d4178754f7fa5e # main
+    secrets: inherit
