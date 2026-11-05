@@ -51,21 +51,21 @@ From a terminal:
 
 ```bash
 claude plugin marketplace add neteye-platform/cc-side-session-summary
-claude plugin install cc-side-summary@neteye-platform
+claude plugin install cc-side-session-summary@neteye-platform
 ```
 
 Or from inside a Claude Code session:
 
 ```text
 /plugin marketplace add neteye-platform/cc-side-session-summary
-/plugin install cc-side-summary@neteye-platform
+/plugin install cc-side-session-summary@neteye-platform
 ```
 
 No download or build step is needed: Claude Code fetches the repository and
 loads the TypeScript directly. Start a new session (or run `/reload-plugins`),
 then send a prompt.
 
-To check it loaded, run `/plugin` and look for `cc-side-summary` under
+To check it loaded, run `/plugin` and look for `cc-side-session-summary` under
 **Installed**.
 
 ## Update
@@ -75,7 +75,7 @@ Claude Code caches an installed plugin by version, so updates arrive when the
 
 ```bash
 claude plugin marketplace update neteye-platform
-claude plugin update cc-side-summary@neteye-platform
+claude plugin update cc-side-session-summary@neteye-platform
 ```
 
 Refreshing the marketplace only updates its listing, so the second command is
@@ -85,7 +85,7 @@ what installs the new version. Then start a new session or run
 ## Uninstall
 
 ```bash
-claude plugin uninstall cc-side-summary@neteye-platform
+claude plugin uninstall cc-side-session-summary@neteye-platform
 ```
 
 You can also turn it off without removing it from the **Installed** tab of

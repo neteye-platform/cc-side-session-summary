@@ -7,7 +7,7 @@
   },
   "plugins": [
     {
-      "name": "cc-side-summary",
+      "name": "cc-side-session-summary",
       "source": "./",
       "description": "A live side pane with the worktree, goal, progress checklist, what is happening now and the last thing done, plus token and cost stats"
     }
