@@ -72,7 +72,6 @@ test('/summary closes an open pane and opens a closed one', async ($, on) => {
   expect(closed).toEqual(['cc-side-session-summary'])
   expect(first.text).toBeUndefined()
 
-  // A hot reload runs session.start again: a closed pane stays closed.
   await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
   expect(isOpen).toBe(false)
 

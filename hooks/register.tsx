@@ -63,8 +63,7 @@ const view = atom(
   { shape: 'view-1' },
 )
 
-// Whether the person closed the pane. It lives in `$.state`, so a hot reload
-// (which runs `session.start` again) does not open a pane the person closed.
+// In `$.state`, not a module variable: it must survive a hot reload.
 const pane = atom(
   { plugin: 'cc-side-session-summary', key: 'pane' } as const,
   { isClosed: false } as PaneState,
@@ -145,9 +144,7 @@ export const register: Register = on => {
     return next(e)
   })
 
-  // `/summary` toggles the pane. The answer has no `text`: a plugin's command
-  // text goes into the transcript and into the model's requests, so the
-  // feedback is a toast instead.
+  // No `text`: a plugin's command text also goes into the model's requests.
   on('command.run', { command: 'summary' }, async $ => {
     const open = (await $.ui.panes()).find(x => x.id === PANE)
     if (open !== undefined && open.isPlaced && open.isShown) {
@@ -161,7 +158,6 @@ export const register: Register = on => {
     return {}
   })
 
-  // Remember a close by the person (close mark, ctrl+x x) or by `/summary`.
   on('ui.close', { id: PANE }, async ($, e, next) => {
     if (e.origin.kind !== 'unload') await update($, pane, () => ({ isClosed: true }))
 
@@ -169,8 +165,6 @@ export const register: Register = on => {
   }).catch(($, e, next) => next(e))
 
   on('prompt.submit', async ($, e, next) => {
-    // A slash command (such as `/summary`) needs no instruction: it does not
-    // start a model turn of its own.
     if (e.command) return next(e)
     if (e.text) {
       // Drop the previous turn's leftovers so the pane does not show a stale
@@ -215,8 +209,6 @@ export const register: Register = on => {
     return ran
   }).catch(($, e, next) => next(e))
 
-  // The `set_status` calls are bookkeeping for the pane: hide their rows in the
-  // transcript. The full view (ctrl+o, --verbose) still shows them.
   on('ui.render', { component: 'ToolUse' }, async ($, e, next) => {
     if (e.props.tool !== TOOL || e.props.isExpanded === true || e.props.isErrored) return next(e)
     const { Box } = $.ui.resolve(e)
