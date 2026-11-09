@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
-import type { Activity, Git, Model, Status, Step, Usage, View } from '../types'
+import type { Activity, Git, Model, PaneState, Status, Step, Usage, View } from '../types'
 
 const PANE = 'cc-side-session-summary'
 const TOOL = 'mcp__cc-side-session-summary__set_status'
@@ -61,6 +61,13 @@ const view = atom(
   { plugin: 'cc-side-session-summary', key: 'view' } as const,
   { isProgressOpen: true } as View,
   { shape: 'view-1' },
+)
+
+// In `$.state`, not a module variable: it must survive a hot reload.
+const pane = atom(
+  { plugin: 'cc-side-session-summary', key: 'pane' } as const,
+  { isClosed: false } as PaneState,
+  { shape: 'pane-1' },
 )
 
 const model = atom(
@@ -129,21 +136,37 @@ export const register: Register = on => {
       name: 'summary',
       description: 'Open the session summary side pane',
     })
-    void $.ui.open({ id: PANE, title: 'Summary' })
+    const p = await read($, pane)
+    if (!p.isClosed) void $.ui.open({ id: PANE, title: 'Summary' })
     void refreshGit($)
     void refreshUsage($)
 
     return next(e)
   })
 
+  // No `text`: a plugin's command text also goes into the model's requests.
   on('command.run', { command: 'summary' }, async $ => {
-    await $.ui.open({ id: PANE, title: 'Summary' })
+    const open = (await $.ui.panes()).find(x => x.id === PANE)
+    if (open !== undefined && open.isPlaced && open.isShown) {
+      await $.ui.close({ id: PANE })
+      $.ui.toast('Summary pane closed. Run /summary to open it again.')
+    } else {
+      await update($, pane, () => ({ isClosed: false }))
+      await $.ui.open({ id: PANE, title: 'Summary' })
+    }
 
-    return { text: 'Session summary pane opened.' }
+    return {}
   })
 
+  on('ui.close', { id: PANE }, async ($, e, next) => {
+    if (e.origin.kind !== 'unload') await update($, pane, () => ({ isClosed: true }))
+
+    return next(e)
+  }).catch(($, e, next) => next(e))
+
   on('prompt.submit', async ($, e, next) => {
-    if (!e.command && e.text) {
+    if (e.command) return next(e)
+    if (e.text) {
       // Drop the previous turn's leftovers so the pane does not show a stale
       // "Idle - waiting for you" or tool name under "Current (working)".
       await update($, status, s => ({ ...s, current: '' }))
@@ -155,10 +178,13 @@ export const register: Register = on => {
 
   on('tool.call', { tool: TOOL }, async ($, e) => {
     const steps: Step[] = Array.isArray(e.steps)
-      ? e.steps.slice(0, 12).map((s: Step) => ({
-          text: String(s.text).slice(0, 120),
-          status: s.status === 'done' || s.status === 'doing' ? s.status : 'todo',
-        }))
+      ? e.steps
+          .filter((s: unknown): s is Step => typeof s === 'object' && s !== null)
+          .slice(0, 12)
+          .map(s => ({
+            text: String(s.text ?? '').slice(0, 120),
+            status: s.status === 'done' || s.status === 'doing' ? s.status : 'todo',
+          }))
       : []
     await update($, status, prev => ({
       goal: typeof e.goal === 'string' && e.goal ? e.goal.slice(0, 200) : prev.goal,
@@ -182,6 +208,19 @@ export const register: Register = on => {
 
     return ran
   }).catch(($, e, next) => next(e))
+
+  on('ui.render', { component: 'ToolUse' }, async ($, e, next) => {
+    if (e.props.tool !== TOOL || e.props.isExpanded === true || e.props.isErrored) return next(e)
+    const { Box } = $.ui.resolve(e)
+
+    return <Box />
+  })
+  on('ui.render', { component: 'ToolResult' }, async ($, e, next) => {
+    if (e.props.tool !== TOOL || e.props.isExpanded === true || e.props.isErrored) return next(e)
+    const { Box } = $.ui.resolve(e)
+
+    return <Box />
+  })
 
   // Observe each main-loop model request for its model and effort, then pass the
   // response stream through untouched.

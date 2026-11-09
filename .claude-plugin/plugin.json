@@ -1,6 +1,6 @@
 {
   "name": "cc-side-session-summary",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A live side pane for Claude Code that shows the worktree (branch, staged and unstaged counts), the session goal, a color-coded progress checklist with the current step highlighted, and the last thing completed. It also carries a compact stats row for tokens, context used and cost, and updates itself as the session runs.",
   "types": "./types/index.d.ts",
   "author": { "name": "Marco Berlanda" },
