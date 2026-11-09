@@ -31,11 +31,22 @@ current and last-done text come from those calls. The git state and the usage
 figures are read by the mod itself, and refresh after tool calls and at the end
 of each turn.
 
+The `set_status` calls are bookkeeping for the pane, so the mod hides their rows
+in the chat. The full transcript view (ctrl+o) and `--verbose` still show them.
+The instruction is not attached to slash commands.
+
 ## `/summary`
 
-The pane opens by itself at session start. Run `/summary` to open it again. On a
-terminal narrower than about 144 columns a pane does not open on its own, so use
-the command there.
+The pane opens by itself at session start. `/summary` toggles it: it closes the
+pane when it is shown, and opens it otherwise. The command writes nothing to the
+chat; a short toast confirms the close.
+
+When you close the pane (with `/summary`, the close mark or the close key), it
+stays closed for the rest of the session, also after a plugin reload. Run
+`/summary` to bring it back.
+
+On a terminal narrower than about 144 columns a pane does not open on its own,
+so use the command there.
 
 ## Requirements
 
